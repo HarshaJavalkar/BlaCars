@@ -1,19 +1,39 @@
-FROM node:18
+version: "3.9"
 
-# Set the working directory
-WORKDIR /usr/src/app
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/your-db-name
+    volumes:
+      - ./backend:/usr/src/app
 
-# Install dependencies
-RUN npm install
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./frontend:/usr/src/app
 
-# Copy the rest of the application code
-COPY . .
-
-# Expose the application port
-EXPOSE 3000
-
-# Start the application
-CMD ["node", "server.js"]
+volumes:
+  mongodata:
