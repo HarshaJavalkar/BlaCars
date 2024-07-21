@@ -1,17 +1,17 @@
-version: "3.11"
+version: "3.12"
 
 services:
   mongodb:
     image: mongo:latest
-    container_name: mongodb
+    container_name: mongodb latest
     ports:
-      - "27017:27017"
+      - "27017:27018"
     volumes:
-      - mongodata:/data/db
+      - mongodata:/data/db/path
 
   backend:
     build:
-      context: ./backend
+      context: ./backend-1
     container_name: backend
     ports:
       - "3000:3000"
